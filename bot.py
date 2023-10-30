@@ -17,7 +17,7 @@ def welcome(message):
     
 @bot.message_handler(content_types=['text'])
 def ask(message):
-    print("\nВопрос: {0}, от пользователя {1.first_name}\n".format(message.text, message.from_user))
+    print("\n\nВопрос: {0}, от пользователя {1.first_name}\n".format(message.text, message.from_user))
     response = g4f.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": message.text}],
