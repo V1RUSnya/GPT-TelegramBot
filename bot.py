@@ -1,6 +1,7 @@
 # -*- coding: cp1251 -*-
 import g4f
 import telebot
+from time import sleep
 from g4f.Provider import Yqcloud
 token = "996630940:AAHv4EI0yqabujOhJE7At24ejsHTfs2i5qw"
 
@@ -17,18 +18,21 @@ def welcome(message):
     
 @bot.message_handler(content_types=['text'])
 def ask(message):
-    print("\n\nВопрос: {0}, от пользователя {1.first_name}\n".format(message.text, message.from_user))
-    response = g4f.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": message.text}],
-        provider= Yqcloud,
-        stream=True,
-    )
-    textCloud = ""
-    sent_message = bot.send_message(message.chat.id, "Ответ: ") 
-    for messaga in response:
-        print(messaga, flush=True, end='')
-        textCloud += messaga
-        bot.edit_message_text(textCloud, message.chat.id, sent_message.message_id)  
-
+    try:
+        print("\n\nВопрос: {0}, от пользователя {1.first_name}\n".format(message.text, message.from_user))
+        response = g4f.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": message.text}],
+            provider= Yqcloud,
+            stream=True,
+        )
+        textCloud = ""
+        sent_message = bot.send_message(message.chat.id, "Ответ: ") 
+        for messaga in response:
+            print(messaga, flush=True, end='')
+            textCloud += messaga
+            bot.edit_message_text(textCloud, message.chat.id, sent_message.message_id) 
+    except telebot.apihelper.ApiTelegramException as e:
+        print(f"Ошибка: {e}! Ожидание 5 секунд")
+        sleep(5)
 bot.polling(none_stop=True)
