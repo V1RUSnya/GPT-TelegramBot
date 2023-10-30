@@ -14,19 +14,21 @@ bot = telebot.TeleBot(token)
 def welcome(message):
     bot.send_message(message.chat.id, "Добро пожаловать, {0.first_name}!\nЯ - <b>{1.first_name}</b>, бот с нейросетью gpt 3.5-turbo!\nЗадавайте любые вопросы!".format(message.from_user, bot.get_me()), parse_mode='html')
     
+    
 @bot.message_handler(content_types=['text'])
 def ask(message):
-    print(f"\nВопрос: {message.text}\n")
+    print("\nВопрос: {0}, от пользователя {1.first_name}\n".format(message.text, message.from_user))
     response = g4f.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": message.text}],
         provider= Yqcloud,
-        stream=False,
+        stream=True,
     )
     textCloud = ""
+    sent_message = bot.send_message(message.chat.id, "Ответ: ") 
     for messaga in response:
         print(messaga, flush=True, end='')
         textCloud += messaga
-    bot.send_message(message.chat.id, str(textCloud))    
+        bot.edit_message_text(textCloud, message.chat.id, sent_message.message_id)  
 
 bot.polling(none_stop=True)
