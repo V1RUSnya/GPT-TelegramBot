@@ -27,11 +27,16 @@ def ask(message):
             stream=True,
         )
         textCloud = ""
+        limit = 0
         sent_message = bot.send_message(message.chat.id, "Ответ: ") 
         for messaga in response:
             print(messaga, flush=True, end='')
             textCloud += messaga
-            bot.edit_message_text(textCloud, message.chat.id, sent_message.message_id) 
+            limit+=1
+            if limit == 3:
+                limit = 0
+                bot.edit_message_text(textCloud, message.chat.id, sent_message.message_id) 
+        bot.edit_message_text(textCloud, message.chat.id, sent_message.message_id) 
     except telebot.apihelper.ApiTelegramException as e:
         print(f"Ошибка: {e}! Ожидание 5 секунд")
         sleep(5)
