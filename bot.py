@@ -18,11 +18,12 @@ def welcome(message):
     
 @bot.message_handler(content_types=['text'])
 def ask(message):
+    ps = "(Примечание: Отвечай на русском языке) "
     try:
         print("\n\nВопрос: {0}, от пользователя {1.first_name}\n".format(message.text, message.from_user))
         response = g4f.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": message.text}],
+            messages=[{"role": "user", "content": ps + message.text}],
             provider= Yqcloud,
             stream=True,
         )
@@ -35,8 +36,10 @@ def ask(message):
             limit+=1
             if limit == 3:
                 limit = 0
-                bot.edit_message_text(textCloud, message.chat.id, sent_message.message_id) 
-        bot.edit_message_text(textCloud, message.chat.id, sent_message.message_id) 
+                bot.edit_message_text(textCloud, message.chat.id, sent_message.message_id)
+                mem = textCloud
+        if textCloud != mem:        
+            bot.edit_message_text(textCloud, message.chat.id, sent_message.message_id) 
     except telebot.apihelper.ApiTelegramException as e:
         print(f"Ошибка: {e}! Ожидание 5 секунд")
         sleep(5)
